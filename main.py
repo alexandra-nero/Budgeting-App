@@ -29,14 +29,21 @@ def process_csv(data, budget_sheet):
 
     # processing the weekly values from the budgeting app
     row_start = 21
-    column_labels = 1
-    column_goal = 2
-    column_left = 3
+    column_labels = 0
+    column_goal = 1
+    column_left = 2
     week_budgets = {}
-    while(row_start < row_num):
+    all_weeks = data[row_start:row_num, column_labels+1:column_left+2]
+    week_row = 0
+    counter = all_weeks.shape[0] % 11
+    while(week_row < all_weeks.shape[0]):
         current_week = {}
-        print(data[row_start:row_start+1, column_labels:column_labels+1])
-        row_start += 11
+        current_week["Date"] = all_weeks[week_row+1:week_row+2,
+            column_labels:column_labels+1].flatten()
+        
+        week_budgets["week" + str(counter)] = current_week
+        counter -= 1
+        week_row += 11
 
     return budget_sheet
 
@@ -54,6 +61,5 @@ def main():
     data = load_csv('sheet1.csv')
     budget_sheet = process_csv(data, budget_sheet)
 
-    print(budget_sheet)
 
 main()
