@@ -14,24 +14,6 @@ def check_int(input_string):
     except ValueError:
         return False
 
-def print_current_week(value):
-    if (not check_int(value)):
-        print("Week should be an int, try again")
-        return
-    if (int(value) > total_weeks):
-        print("Week", value, "not stored, try again")
-        return
-    goal_names = budget_sheet["goal_names"]
-    goal_values = budget_sheet["goal_values"]
-    current_week = week_spending["week"+value]
-    print('\n')
-    print("Current Week:")
-    for key, value in current_week.items():
-        left = calculate_money_left(value, key)
-        row = [key, value, left]
-        print("{: >20} {: >20} {: >20}".format(*row))
-    print('\n')
-
 def load_csv(file_name):
     print("Loading CSV...")
     data = list(csv.reader(open(file_name)))
@@ -79,6 +61,32 @@ def process_goals(data):
 
     return budget_sheet
 
+def print_current_week(value):
+    if (not check_int(value)):
+        print("Week should be an int, try again")
+        return
+    if (int(value) > total_weeks):
+        print("Week", value, "not stored, try again")
+        return
+    current_week = week_spending["week"+value]
+    print('\n')
+    print("Current Week:")
+    row = ["Category", "Spent", "Left"]
+    print("{: >16} {: >16} {: >16}".format(*row))
+    for key, value in current_week.items():
+        left = calculate_money_left(value, key)
+        if (left is ""):
+            continue
+        row = [key, value, left]
+        print("{: >16} {: >16} {: >16}".format(*row))
+    print('\n')
+
+def print_add_spending():
+    current_week = week_spending["week"+str(total_weeks)]
+    change = input("\nEnter category and amount:\n")
+    current_week[change.split()[0]] += float(change.split()[1])
+    print("Added",change.split()[1],"to", change.split()[0],"\n")
+
 def calculate_money_left(value, category):
     global budget_sheet
     goal_names = budget_sheet["goal_names"].tolist()
@@ -105,6 +113,8 @@ def handle_commands():
                 print_current_week(command.split()[2])
             else:
                 print_current_week(str(total_weeks))
+        elif ("add spending" in command.lower()):
+            print_add_spending()
 
 def main():
     print("Budgeting Script")
