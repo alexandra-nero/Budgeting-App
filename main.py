@@ -3,9 +3,11 @@ import csv
 import numpy as np
 
 # global variables:
+data = [[]]
 budget_sheet = {}
 week_spending = {}
 total_weeks = 0
+file_name = "sheet1.csv"
 
 def check_int(input_string):
     try:
@@ -15,14 +17,16 @@ def check_int(input_string):
         return False
 
 def load_csv(file_name):
+    global data
     print("Loading CSV...")
     data = list(csv.reader(open(file_name)))
     data = np.array(data)
     return data
 
-def process_weeks(data):
+def process_weeks():
     global total_weeks
     global week_spending
+    global data
     row_num = data.shape[0]
     column_num = data.shape[1]
     # processing the weekly values from the budgeting app spreadsheet
@@ -48,8 +52,9 @@ def process_weeks(data):
         week_row += 11
     return week_spending
 
-def process_goals(data):
+def process_goals():
     global budget_sheet
+    global data
     row_num = data.shape[0]
     column_num = data.shape[1]
 
@@ -98,6 +103,7 @@ def calculate_money_left(value, category):
 def export_to_csv():
     print("Exporting to csv... \n")
 
+
 def save_to_google_drive():
     print("Saving to Google Drive... \n")
 
@@ -107,7 +113,7 @@ def  print_categories_and_goals():
 def handle_commands():
     command = ""
     while "exit" not in command.lower():
-        command = input("Input commands:\nexit, add spending, print week n\n")
+        command = input("Input commands:\n- exit\n- add spending\n- print week n\n")
         if ("print week" in command.lower()):
             if (len(command.split()) > 2):
                 print_current_week(command.split()[2])
@@ -115,14 +121,14 @@ def handle_commands():
                 print_current_week(str(total_weeks))
         elif ("add spending" in command.lower()):
             print_add_spending()
+    export_to_csv()
 
 def main():
     print("Budgeting Script")
 
-    budget_sheet = {}
-    data = load_csv('sheet1.csv')
-    budget_sheet = process_goals(data)
-    week_spending = process_weeks(data)
+    data = load_csv(file_name)
+    budget_sheet = process_goals()
+    week_spending = process_weeks()
     handle_commands()
 
 main()
